@@ -1,8 +1,9 @@
 from model import *
-
+from load_network import *
 def main():
-    mo = Model()
-    mo.run()
-    mo.show()
+    l = process_network()
+    #mo = Model()
+    #mo.run()
+   # mo.show()
 
 main()

@@ -6,3 +6,11 @@ dataset/hugo/
 dataset/not_hugo_alex/cfp-dataset/Data/Fiducials/001/frontal/
 
 dataset/not_hugo_alex/cfp-dataset/Data/Fiducials/001/profile/
+
+output/
+
+hugo.jpg
+
+hugo_not_hugo_28_25_32.model
+
+__pycache__/

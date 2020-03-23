@@ -5,28 +5,43 @@ import argparse
 import imutils
 import cv2
 
-#tried (64*64)
+# To avoid cnn errors
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
 
-ap = argparse.ArgumentParser()
-ap.add_argument("-m", "--model", required=True,
-help="path to trained model mode")
-ap.add_argument("-i", "--image", required=True,
-help="path to input image")
-args= vars(ap.parse_args())
+print("[*] Settins config ..")
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
+print("[*] Done")
+# ---------------
+
+#tried (64*64)
+IMAGE_SIZE = (64, 64)
+
 
 class process_network:
-    def __init__(self, input_model):
+    def __init__(self):
+        ap = argparse.ArgumentParser()
+        ap.add_argument("-m", "--model", required=True,
+        help="path to trained model mode")
+        ap.add_argument("-i", "--image", required=True,
+        help="path to input image")
+        self.args= vars(ap.parse_args())
         print("[*] Loading network ..")
-        self.model = load_model(input_model)
+        self.model = load_model(self.args["model"])
         print("[*] Done")
-        self.image_size = (64, 64)
+        self.path_frame = self.args["image"]
+        self.frame = cv2.imread(self.path_frame)
+        self.load_img(self.frame)
+        self.getProba()
 
     def load_img(self, frame):
         #image = cv2.imread(args["image"])
         self.image = frame
         self.orig = self.image.copy()
-        self.image = cv2.resize(self.image, self.image_size)
-        self.image = image.astype("float")/ 255.0
+        self.image = cv2.resize(self.image, IMAGE_SIZE)
+        self.image = self.image.astype("float")/ 255.0
         self.image = img_to_array(self.image)
         self.image = np.expand_dims(self.image, axis=0) # to have dims (1, width, height, 3)
 

@@ -6,7 +6,16 @@ from keras.layers.core import Flatten
 from keras.layers.core import Dense
 from keras import backend as K
 
+# To avoid cnn errors
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
 
+print("[*] Settins config ..")
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
+print("[*] Done")
+# ---------------
 class Network:
     @staticmethod
     def build(width, height, depth, classes):
