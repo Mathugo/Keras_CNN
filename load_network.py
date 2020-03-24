@@ -6,8 +6,8 @@ import imutils
 import cv2
 
 #tried (64*64)
+#IMAGE_SIZE = (64, 64)
 IMAGE_SIZE = (64, 64)
-
 
 class process_network:
     def __init__(self):

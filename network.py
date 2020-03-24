@@ -37,6 +37,7 @@ class Network:
         #first (and only) set of FC => RELU layers
         model.add(Flatten()) 
         #we flatten the output of MaPooling2D layer into a single vector -> apply dense/fully connected layers
+        # transform format of the images from two dimensional array (ex : 28x28 pixels) to a one : 28*28=784
         model.add(Dense(500))
         #fully-connected layer contains 500 nodes -> we pass it though nonlinear ReLu activation
         model.add(Activation("relu"))
@@ -45,4 +46,7 @@ class Network:
         #Number of nodes is equal to the number of classes which will yield the proba for each class
         model.add(Activation("softmax"))
         #return the constructed network architecture
+
+
+        
         return model

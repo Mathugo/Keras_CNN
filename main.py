@@ -10,16 +10,19 @@ print("[*] Done")
 
 from model import *
 from load_network import *
-EPOCHS_ = 25
+
+EPOCHS_ = 500
 LR_ = 1e-3
-BS_ = 32
+BS_ = 64 #batch size of 128 may increase gpu utilisation
 
 def main():
-   # l = process_network()
-    mo = Model(EPOCHS=EPOCHS_, INIT_LR=LR_, BS=BS_)
-    mo.run()
-    mo.show()
+    #l = process_network()
+    model = Model(EPOCHS=EPOCHS_, INIT_LR=LR_, BS=BS_)
+    model.run()
+    model.save_plot()
     
 main()
+print("[!] Closing session ..")
 session.close()
 del session
+print("[*] Done")
