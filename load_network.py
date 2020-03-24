@@ -5,17 +5,6 @@ import argparse
 import imutils
 import cv2
 
-# To avoid cnn errors
-from tensorflow.compat.v1 import ConfigProto
-from tensorflow.compat.v1 import InteractiveSession
-
-print("[*] Settins config ..")
-config = ConfigProto()
-config.gpu_options.allow_growth = True
-session = InteractiveSession(config=config)
-print("[*] Done")
-# ---------------
-
 #tried (64*64)
 IMAGE_SIZE = (64, 64)
 

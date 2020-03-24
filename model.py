@@ -23,7 +23,7 @@ IMAGE_WIDTH = 64
 IMAGE_HEIGHT = 64
 
 class Model:
-    def __init__(self):
+    def __init__(self, EPOCHS=25, INIT_LR = 1e-3, BS=64):
         ap = argparse.ArgumentParser()
         ap.add_argument("-d", "--dataset", required=True,
             help="path to input dataset")
@@ -34,9 +34,10 @@ class Model:
         self.args = vars(ap.parse_args())
     # initialize the number of epochs to train for, initial learning rate,
         # and batch size
-        self.EPOCHS = 100 #25
-        self.INIT_LR = 1e-3
-        self.BS = 64 # 32
+        self.EPOCHS = EPOCHS #25
+        self.INIT_LR = INIT_LR #-3
+        self.BS = BS # 32
+    
     """
     Assume you have a dataset with 200 samples (rows of data) and you choose a batch size of 5 and 1,000 epochs.
     This means that the dataset will be divided into 40 batches, each with five samples. The model weights will be updated after each batch of five samples.
@@ -120,3 +121,18 @@ class Model:
         plt.ylabel("Loss/Accuracy")
         plt.legend(loc="lower left")
         plt.savefig(self.args["plot"])
+
+"""
+
+Stochastic gradient descent is an optimization algorithm that estimates the error gradient for the current 
+state of the model using examples from the training dataset, then updates the weights 
+of the model using the back-propagation of errors algorithm, referred to as simply backpropagation.
+The amount that the weights are updated during training is referred to as the step size or the “learning rate.”
+Specifically, the learning rate is a configurable hyperparameter used in the training of neural networks that has
+a small positive value, often in the range between 0.0 and 1.0.
+The learning rate controls how quickly the model is adapted to the problem. 
+Smaller learning rates require more training epochs given the smaller changes made to the weights 
+each update, whereas larger learning rates result in rapid changes and require fewer training epochs.
+A learning rate that is too large can cause the model to converge too quickly to a suboptimal solution,
+whereas a learning rate that is too small can cause the process to get stuck.
+"""
