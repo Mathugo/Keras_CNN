@@ -49,6 +49,8 @@ IMAGE_HEIGHT = 224
 CLASSES = 2
 
 class Model:
+    #__slots__ = ('data','labels', imagePaths)
+    
     def __init__(self, EPOCHS=25, INIT_LR = 1e-3, BS=64):
         ap = argparse.ArgumentParser()
         ap.add_argument("-d", "--dataset", required=True,
@@ -57,12 +59,16 @@ class Model:
             help="path to output model")
         ap.add_argument("-p", "--plot", type=str, default="plot.png",
             help="path to output accuracy/loss plot")
+        ap.add_argument("-n", "--number_images", type=int, default=5000,
+            help="number of images to load")
         self.args = vars(ap.parse_args())
     # initialize the number of epochs to train for, initial learning rate,
         # and batch size
         self.EPOCHS = EPOCHS #25
         self.INIT_LR = INIT_LR #-3
         self.BS = BS # 32
+        self.number = self.args["number_images"]
+
         print("[STATUS] start time - {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))
         start = time.time()
         print("[*] Starting model with {} EPOCHS {} LR {} Batch Size ..".format(self.EPOCHS, self.INIT_LR, self.BS))
@@ -76,17 +82,31 @@ class Model:
         self.imagePaths = sorted(list(paths.list_images(self.args["dataset"])))
         random.seed(42)
         random.shuffle(self.imagePaths)
-        print("[*] Loading {} images".format(len(self.imagePaths)))
+        print("[*] Loading {} images".format(self.number))
+        self.count_label = {"hugo":0, "not_hugo":0, "alex":0}
+    
         for imagePath in self.imagePaths:
             image = cv2.imread(imagePath)
             image = cv2.resize(image, IMAGE_SIZE) #Spatial dimension requiered for LeNet
             image = img_to_array(image)
-            self.data.append(image)
-
+            
             # extract class label from image path and update the labels list
             label = imagePath.split(os.path.sep)[-2]
-            label = 1 if label == "hugo" else 0
-            self.labels.append(label)
+
+            if self.count_label["hugo"] == -1 and self.count_label["not_hugo"] == -1:
+                print("[!] {} images loaded".format(self.number))
+                break 
+
+            elif self.count_label[label] >= self.number:
+                self.count_label[label] = -1
+
+            elif self.count_label[label] != -1:
+
+                self.count_label[label]+=1 # Update the number of image loaded
+                label = 1 if label == "hugo" else 0
+                self.data.append(image)
+                self.labels.append(label)
+            
         print("[*] Done loading dataset")
 
     def transform_data(self):
@@ -112,7 +132,7 @@ class Model:
     def build(self):
         print("[*] Compiling model ..")
         #self.model = LeNet.build(width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3, classes=CLASSES)
-        self.model = VGG16Net(width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3, classes=CLASSES)
+        self.model = VGG16Net.build(classes=CLASSES, width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3)
         self.opt = Adam(lr=self.INIT_LR, decay=self.INIT_LR/self.EPOCHS)
         self.model.compile(loss=keras.losses.categorical_crossentropy, metrics=["accuracy"])
         print("[*] Done")

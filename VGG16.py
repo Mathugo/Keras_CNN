@@ -7,7 +7,7 @@ from keras import backend as K
 
 class VGG16Net:
     @staticmethod
-    def build(self, classes=2, width=224, height=224, depth=3):
+    def build(classes=2, width=224, height=224, depth=3):
         inputShape = (height, width, depth)
         model = Sequential()
         if K.image_data_format() == "channels_first":

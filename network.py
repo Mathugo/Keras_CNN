@@ -48,5 +48,5 @@ class Network:
         #return the constructed network architecture
 
 
-        
+
         return model

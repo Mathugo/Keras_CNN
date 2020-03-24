@@ -11,9 +11,9 @@ print("[*] Done")
 from model import *
 from load_network import *
 
-EPOCHS_ = 500
+EPOCHS_ = 25
 LR_ = 1e-3
-BS_ = 64 #batch size of 128 may increase gpu utilisation
+BS_ = 8 #batch size of 128 may increase gpu utilisation
 
 def main():
     #l = process_network()
