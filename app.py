@@ -8,10 +8,8 @@ import argparse
 class Application:
     def __init__(self):
         ap = argparse.ArgumentParser()
-        ap.add_argument("-d", "--dataset", required=True,
+        ap.add_argument("-d", "--dataset", required=True, type=str,
             help="path to input dataset")
-        ap.add_argument("-o", "--ouput", required=True,
-            help="name of the output model")
         ap.add_argument("-p", "--plot", type=str, default="plot.png",
             help="path to output accuracy/loss plot")
         ap.add_argument("-n", "--number_images", type=int, default=5000,
@@ -51,6 +49,6 @@ class Application:
     def close_session(self):
         print("[!] Closing session ..")
         self.session.close()
-        del session
+        del self.session
         print("[*] Done")
     

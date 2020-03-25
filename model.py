@@ -64,11 +64,10 @@ class Model:
         self.BS = self.args["batch_size"]
         self.number = self.args["number_images"]
         self.model_name = self.args["model"]
-
+        self.save_file = self.model_name+"_"+str(IMAGE_WIDTH)+"_"+str(self.EPOCHS)+"_"+str(self.INIT_LR)+"_"+str(self.BS)+"_"+str(self.number)+".model"
         print("[STATUS] start time - {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))
         start = time.time()
         print("[*] Starting model with EPOCHS {} LR {} Batch Size {}".format(self.EPOCHS, self.INIT_LR, self.BS))
-  
     def load_dataset(self):
         # initialize the data and labels
         print("[INFO] loading images...")
@@ -111,7 +110,7 @@ class Model:
         #partition the data into trainning and testing splits using 75% of 
         # the data for training and other for testing
         (self.trainX, self.testX, self.trainY, self.testY) = train_test_split(self.data, 
-        self.labels, test_size=0.5, random_state=42)
+        self.labels, test_size=0.75, random_state=42)
         #convert the labels from integers to vectors
         self.trainY = to_categorical(self.trainY, num_classes=2)
         self.testY = to_categorical(self.testY, num_classes=2)
@@ -165,7 +164,7 @@ class Model:
 
         #save the model
         print("[*] Saving model ..")
-        self.model.save(self.args["output"])
+        self.model.save(self.save_file)
         print("[*] Done")
 
     def save_plot(self):

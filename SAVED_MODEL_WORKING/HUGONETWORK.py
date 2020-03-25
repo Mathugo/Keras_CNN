@@ -27,10 +27,11 @@ class HUGONETWORK:
         model.add(Conv2D(filters=32, kernel_size=(5, 5), padding="same"))
         model.add(Activation("relu"))
         model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
+        # Learning 32 convolutionnal filters (we are going deeper in the network architecture)
         #third set
         model.add(Conv2D(filters=64, kernel_size=(5,5), padding="same"))
         model.add(Conv2D(filters=64, kernel_size=(5,5), padding="same"))
-        model.add(Conv2D(filters=64, kernel_size=(5,5), padding="same"))
+        #model.add(Conv2D(filters=64, kernel_size=(5,5), padding="same"))
         model.add(Activation("relu"))
         model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2)))
         #fourth set

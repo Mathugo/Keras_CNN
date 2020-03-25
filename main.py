@@ -15,7 +15,8 @@ def main():
         from load_network import process_network
         l = process_network()
     
-    start_process()
+    #start_process()
+    start_app()
 main()
 
 
