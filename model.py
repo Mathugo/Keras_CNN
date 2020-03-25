@@ -5,8 +5,7 @@ from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from keras.preprocessing.image import img_to_array
 from keras.utils import to_categorical
-from network import Network as LeNet
-from VGG16 import VGG16Net
+
 from imutils import paths
 import matplotlib.pyplot as plt
 import argparse
@@ -16,6 +15,9 @@ import keras
 
 from RESNET50 import RESNET50
 from INCEPTIONV3 import INCEPTIONV3
+from LENET import LENET
+from VGG16 import VGG16Net
+from HUGONETWORK import HUGONETWORK
 
 # keras imports
 from keras.applications.vgg16 import VGG16, preprocess_input
@@ -53,15 +55,15 @@ IMAGE_HEIGHT = 224
 CLASSES = 2
 
 class Model:
-    
-    def __init__(self, args, EPOCHS=25, INIT_LR = 1e-3, BS=64):
+    def __init__(self, args):
         self.args = args
     # initialize the number of epochs to train for, initial learning rate,
         # and batch size
-        self.EPOCHS = EPOCHS #25
-        self.INIT_LR = INIT_LR #-3
-        self.BS = BS # 32
+        self.EPOCHS = self.args["epochs"] #25
+        self.INIT_LR = self.args["learning_rate"] #-3
+        self.BS = self.args["batch_size"]
         self.number = self.args["number_images"]
+        self.model_name = self.args["model"]
 
         print("[STATUS] start time - {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))
         start = time.time()
@@ -81,9 +83,8 @@ class Model:
     
         for imagePath in self.imagePaths:
             image = cv2.imread(imagePath)
-            image = cv2.resize(image, IMAGE_SIZE) #Spatial dimension requiered for LeNet
+            image = cv2.resize(image, IMAGE_SIZE) 
             image = img_to_array(image)
-            
             # extract class label from image path and update the labels list
             label = imagePath.split(os.path.sep)[-2]
 
@@ -95,12 +96,10 @@ class Model:
                 self.count_label[label] = -1
 
             elif self.count_label[label] != -1:
-
                 self.count_label[label]+=1 # Update the number of image loaded
                 label = 1 if label == "hugo" else 0
                 self.data.append(image)
                 self.labels.append(label)
-            
         print("[*] Done loading dataset")
 
     def transform_data(self):
@@ -113,7 +112,6 @@ class Model:
         # the data for training and other for testing
         (self.trainX, self.testX, self.trainY, self.testY) = train_test_split(self.data, 
         self.labels, test_size=0.25, random_state=42)
-
         #convert the labels from integers to vectors
         self.trainY = to_categorical(self.trainY, num_classes=2)
         self.testY = to_categorical(self.testY, num_classes=2)
@@ -124,10 +122,19 @@ class Model:
         print("[*] Done")
 
     def build(self):
-        print("[*] Compiling model ..")
-        #self.model = LeNet.build(width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3, classes=CLASSES)
-        #self.model = VGG16Net.build(classes=CLASSES, width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3)
-        self.model = RESNET50.build(n_classes=CLASSES)
+        print("[*] Compiling model {}".format(self.model_name))
+
+        if self.model_name == "LENET":
+            self.model = LENET.build(width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3, classes=CLASSES)
+        elif self.model_name == "RESNET50":
+            self.model = RESNET50.build(n_classes=CLASSES)
+        elif self.model_name == "VGG16":
+            self.model = VGG16Net.build(n_classes=CLASSES, width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3)
+        elif self.model_name == "INCEPTIONV3":
+            self.model = INCEPTIONV3.build(n_classes=CLASSES)
+        elif self.model_name == "HUGONETWORK":
+            self.model = HUGONETWORK.build(n_classes=CLASSES, width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3)
+        
         self.opt = Adam(lr=self.INIT_LR, decay=self.INIT_LR/self.EPOCHS)
         self.model.compile(loss=keras.losses.categorical_crossentropy, metrics=["accuracy"], optimizer=self.opt)
         print("[*] Done")

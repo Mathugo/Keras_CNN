@@ -3,6 +3,7 @@ from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
 import tensorflow as tf
 import os
+import argparse
 
 class Application:
     def __init__(self):
@@ -23,19 +24,18 @@ class Application:
             help="learning rate")
         ap.add_argument("-m","--model",type=str, default="RESNET50",
             help="model to choose `LENET` or `INCEPTIONV3` or `RESNET50` or `VGG16`")
-        ap.add_argument("-g","--gpu", type=bool, default=1,
-            help="turn off the gpu `0`")
+        ap.add_argument("-g","--gpu", type=str, default="yes",
+            help="Use the gpu `yes` or `no`")
         self.args = vars(ap.parse_args())   
         self.model = Model(self.args)
     
     def run(self):
-        model = Model(EPOCHS=self.args["epochs"], INIT_LR=self.args["learning_rate"], BS=self.args["batch_size"])
-        model.run()
-        model.save_plot()
-        
+        self.model.run()
+        self.model.save_plot()
+
     def create_session(self):
         print("[*] Settings config ..")
-        if self.args["gpu"] is False:
+        if self.args["gpu"] == "no":
             os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
         if tf.test.gpu_device_name():
             print('GPU found')

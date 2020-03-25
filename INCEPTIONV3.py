@@ -6,7 +6,7 @@ from keras.models import Model
 
 class INCEPTIONV3:
     @staticmethod
-    def build(dim=224,freeze_layers=30,full_freeze='N'):
+    def build(n_classes=2, dim=224,freeze_layers=30,full_freeze='N'):
         model = InceptionV3(weights='imagenet',include_top=False)
         x = model.output
         x = GlobalAveragePooling2D()(x)
@@ -14,7 +14,9 @@ class INCEPTIONV3:
         x = Dropout(0.5)(x)
         x = Dense(512, activation='relu')(x)
         x = Dropout(0.5)(x)
-        out = Dense(5,activation='softmax')(x)
+
+        out = Dense(n_classes,activation='softmax')(x)
+
         model_final = Model(input = model.input,outputs=out)
 
         if full_freeze != 'N':

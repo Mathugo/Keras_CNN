@@ -7,7 +7,7 @@ from keras import backend as K
 
 class VGG16Net:
     @staticmethod
-    def build(classes=2, width=224, height=224, depth=3):
+    def build(n_classes=2, width=224, height=224, depth=3):
         inputShape = (height, width, depth)
         model = Sequential()
         if K.image_data_format() == "channels_first":
@@ -47,7 +47,7 @@ class VGG16Net:
         model.add(Flatten())
         model.add(Dense(units=4096,activation="relu"))
         model.add(Dense(units=4096,activation="relu"))
-        model.add(Dense(units=classes, activation="softmax"))   
+        model.add(Dense(units=n_classes, activation="softmax"))   
         """→ 1 x Dense layer of 4096 units
         → 1 x Dense layer of 4096 units
         → 1 x Dense Softmax layer of n classes units

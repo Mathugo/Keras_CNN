@@ -8,7 +8,7 @@ from keras import backend as K
 
 # ---------------
 
-class Network:
+class LENET:
     @staticmethod
     def build(width, height, depth, classes):
         model = Sequential() #class since we will be sequentially adding layers to the model
@@ -44,7 +44,4 @@ class Network:
         #Number of nodes is equal to the number of classes which will yield the proba for each class
         model.add(Activation("softmax"))
         #return the constructed network architecture
-
-
-
         return model
