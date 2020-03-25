@@ -111,7 +111,7 @@ class Model:
         #partition the data into trainning and testing splits using 75% of 
         # the data for training and other for testing
         (self.trainX, self.testX, self.trainY, self.testY) = train_test_split(self.data, 
-        self.labels, test_size=0.25, random_state=42)
+        self.labels, test_size=0.5, random_state=42)
         #convert the labels from integers to vectors
         self.trainY = to_categorical(self.trainY, num_classes=2)
         self.testY = to_categorical(self.testY, num_classes=2)
@@ -165,7 +165,7 @@ class Model:
 
         #save the model
         print("[*] Saving model ..")
-        self.model.save(self.args["model"])
+        self.model.save(self.args["output"])
         print("[*] Done")
 
     def save_plot(self):

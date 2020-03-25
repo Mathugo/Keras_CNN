@@ -1,3 +1,9 @@
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
+
 from keras.preprocessing.image import img_to_array
 from keras.models import load_model
 import numpy as np
@@ -7,7 +13,7 @@ import cv2
 
 #tried (64*64)
 #IMAGE_SIZE = (64, 64)
-IMAGE_SIZE = (64, 64)
+IMAGE_SIZE = (224, 224)
 
 class process_network:
     def __init__(self):
@@ -21,10 +27,25 @@ class process_network:
         self.model = load_model(self.args["model"])
         print("[*] Done")
         self.path_frame = self.args["image"]
+        #self.create_session()
         self.frame = cv2.imread(self.path_frame)
         self.load_img(self.frame)
         self.getProba()
+        #self.close_session()
 
+    def create_session(self):
+        print("[*] Settings config ..")
+        config = ConfigProto()
+        config.gpu_options.allow_growth = True
+        self.session = InteractiveSession(config=config)
+        print("[*] Done")
+
+    def close_session(self):
+        print("[!] Closing session ..")
+        self.session.close()
+        del session
+        print("[*] Done")
+    
     def load_img(self, frame):
         #image = cv2.imread(args["image"])
         self.image = frame

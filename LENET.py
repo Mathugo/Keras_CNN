@@ -43,5 +43,5 @@ class LENET:
         model.add(Dense(classes)) 
         #Number of nodes is equal to the number of classes which will yield the proba for each class
         model.add(Activation("softmax"))
-        #return the constructed network architecture
+        #return the constructed network architecture 
         return model
