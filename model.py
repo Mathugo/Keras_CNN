@@ -12,6 +12,10 @@ import matplotlib.pyplot as plt
 import argparse
 import random
 import cv2
+import keras
+
+from RESNET50 import RESNET50
+from INCEPTIONV3 import INCEPTIONV3
 
 # keras imports
 from keras.applications.vgg16 import VGG16, preprocess_input
@@ -49,19 +53,9 @@ IMAGE_HEIGHT = 224
 CLASSES = 2
 
 class Model:
-    #__slots__ = ('data','labels', imagePaths)
     
-    def __init__(self, EPOCHS=25, INIT_LR = 1e-3, BS=64):
-        ap = argparse.ArgumentParser()
-        ap.add_argument("-d", "--dataset", required=True,
-            help="path to input dataset")
-        ap.add_argument("-m", "--model", required=True,
-            help="path to output model")
-        ap.add_argument("-p", "--plot", type=str, default="plot.png",
-            help="path to output accuracy/loss plot")
-        ap.add_argument("-n", "--number_images", type=int, default=5000,
-            help="number of images to load")
-        self.args = vars(ap.parse_args())
+    def __init__(self, args, EPOCHS=25, INIT_LR = 1e-3, BS=64):
+        self.args = args
     # initialize the number of epochs to train for, initial learning rate,
         # and batch size
         self.EPOCHS = EPOCHS #25
@@ -71,7 +65,7 @@ class Model:
 
         print("[STATUS] start time - {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))
         start = time.time()
-        print("[*] Starting model with {} EPOCHS {} LR {} Batch Size ..".format(self.EPOCHS, self.INIT_LR, self.BS))
+        print("[*] Starting model with EPOCHS {} LR {} Batch Size {}".format(self.EPOCHS, self.INIT_LR, self.BS))
   
     def load_dataset(self):
         # initialize the data and labels
@@ -113,7 +107,7 @@ class Model:
         print("[*] Processing data ..")
         # scale the raw pixel intensities to te range [0, 1]
         #self.data = np.array(self.data, dtype="float") / 255.0
-        self.data = np.array(self.data, dtype="float16")
+        self.data = np.array(self.data, dtype="float32")
         self.labels = np.array(self.labels)
         #partition the data into trainning and testing splits using 75% of 
         # the data for training and other for testing
@@ -132,16 +126,16 @@ class Model:
     def build(self):
         print("[*] Compiling model ..")
         #self.model = LeNet.build(width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3, classes=CLASSES)
-        self.model = VGG16Net.build(classes=CLASSES, width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3)
+        #self.model = VGG16Net.build(classes=CLASSES, width=IMAGE_WIDTH, height=IMAGE_HEIGHT, depth=3)
+        self.model = RESNET50.build(n_classes=CLASSES)
         self.opt = Adam(lr=self.INIT_LR, decay=self.INIT_LR/self.EPOCHS)
-        self.model.compile(loss=keras.losses.categorical_crossentropy, metrics=["accuracy"])
+        self.model.compile(loss=keras.losses.categorical_crossentropy, metrics=["accuracy"], optimizer=self.opt)
         print("[*] Done")
         self.model.summary()
        #model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
             #loss is binary because two classes, otherwise --> categorical_crossentropy
       
     def train(self):
-        print("[!] Training network ...")
         print("[*] Creating check point ..")
         checkPoint = ModelCheckpoint(self.args["model"], monitor="val_accuracy",
         verbose=1, save_best_only=True, save_weights_only=False, mode="auto", period=1)
@@ -150,6 +144,7 @@ class Model:
         # earlystopping stop trainning of the model if there is no increase in the parameter 
         # patience set to 20, it 0 increase in 20 epochs, it will stop
         print("[*] Done")
+        print("[!] Training network ...")
         self.H = self.model.fit_generator(self.aug.flow(self.trainX, self.trainY, batch_size=self.BS),
         validation_data=(self.testX, self.testY), steps_per_epoch=len(self.trainX) // self.BS,
         epochs=self.EPOCHS, verbose=1, callbacks=[checkPoint, early])
